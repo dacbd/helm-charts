@@ -1,4 +1,11 @@
 {{/*
+Kill completely invalid values.
+*/}}
+{{- if and (eq .Values.cloudflare.tunnelToken "") (eq .Values.cloudflare.tunnelName "") -}}
+{{- fail "When tunnelToken is empty, tunnelName must be defined for a local tunnel configuration" -}}
+{{- end -}}
+
+{{/*
 Expand the name of the chart.
 */}}
 {{- define "cloudflared.name" -}}

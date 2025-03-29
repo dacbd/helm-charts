@@ -40,7 +40,7 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: "cloudflared"
+          command: ["cloudflared"]
           args:
             {{ include "cloudflared.args" . | nindent 12 }}
           envFrom:
