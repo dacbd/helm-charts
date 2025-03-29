@@ -1,0 +1,140 @@
+# Default values for cloudflared.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+cloudflare:
+  # If a tunnelToken is provided it is assume this is a remotely-managed tunnel.
+  # https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/configure-tunnels/cloudflared-parameters/run-parameters/#token
+  tunnelToken: ""
+
+  # The following options are not required for remotely-managed tunnels
+
+  # credentials values
+  account: ""
+  tunnelId: ""
+  secret: ""
+  # Instead pass a secretName witch contains your credentials.json
+  secretName: ""
+
+  # config values
+  tunnelName: ""
+  enableWarp: false
+  ingress: []
+    # The first rule proxies traffic to the httpbin sample service named web-server at port 80
+    # - hostname: tunnel.example.com
+    #  service: http://web-service:80
+    # This rule sends traffic to the built-in hello-world HTTP server. This can help debug connectivity
+    # issues. If hello.example.com resolves and tunnel.example.com does not, then the problem is
+    # in the connection from cloudflared to your local service, not from the internet to cloudflared.
+    # - hostname: hello.example.com
+    #   service: hello_world
+
+  # cloudflare's base config in their chart includes a 404 service, this chart copies this pattern
+  # but you can choose to disable it here.
+  disable404: false
+
+  # You can provide you own config.yaml content here, overriding all of the above config values
+  config: ""
+  # config: |
+  #   tunnel: mytunnelname
+  #   credentials-file: /etc/cloudflared/creds/credentials.json
+  #   originRequest: # Top-level configuration
+  #     connectTimeout: 30s
+  #   ingress:
+  #     - hostname: example.com
+  #       service: localhost:8000
+  #     - hostname: example2.com
+  #       service: localhost:8001
+
+  # Enviroment variables you can set or override
+  # https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/configure-tunnels/cloudflared-parameters/run-parameters/
+  env:
+    TUNNEL_GRACE_PERIOD: "30s"
+    TUNNEL_LOGLEVEL: "info"
+    TUNNEL_METRICS: "0.0.0.0:2000"
+    TUNNEL_TRANSPORT_PROTOCOL: "auto"
+    TUNNEL_RETRIES: "5"
+    NO_AUTOUPDATE: "true"
+
+    # additional examples:
+    #
+    # TUNNEL_TAG: ""
+    # TUNNEL_ORIGIN_CERT: "~/.cloudflared/cert.pem"
+    # TUNNEL_REGION: "us"
+
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: cloudflare/cloudflared
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+replicaCount: 2
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+
+# User should adjust as needed, these are opinionated defaults
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 75
+  targetMemoryUtilizationPercentage: 75
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Set to true to disable the builtin antiAffinity which will try to place 
+# new pods on nodes which don't have a cloudflared pods already
+disableAntiAffinity: false
