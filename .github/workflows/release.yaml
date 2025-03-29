@@ -8,7 +8,7 @@ on:
 jobs:
   release:
     permissions:
-      package: write
+      packages: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
