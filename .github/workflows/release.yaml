@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          for chart in "charts/*"; do
+          for chart in charts/*; do
             if [ -d "$chart" ]; then
               pushd "$chart"
               echo "Packaging chart: $chart"
