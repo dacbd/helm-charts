@@ -36,9 +36,9 @@ jobs:
         shell: bash
         run: |
           set -e
-          for chart in charts/*; do
-            if [ -d "$chart" ]; then
-              pushd "$chart"
+          for chart in $(ls charts); do
+            if [ -d "./charts/$chart" ]; then
+              pushd "./charts/$chart"
               echo "Packaging chart: $chart"
               helm package .
 
