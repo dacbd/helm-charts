@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cloudflared.envName" . }}
+  labels:
+    {{ include "cloudflared.labels" . | nindent 4 }}
+data:
+  {{ .Values.cloudflare.env | toYaml | nindent 2 }}
+{{- if eq .Values.cloudflare.tunnelToken "" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ include "cloudflared.fullname" . }}-configs"
+  labels:
+    {{ include "cloudflared.labels" . | nindent 4 }}
+data:
+  # https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/local-management/configuration-file/
+  {{- if ne .Values.cloudflare.config "" }}
+  config.yaml: {{ .Values.cloudflare.config }}
+  {{- else }}
+  config.yaml: |
+    # config.yaml content
+    tunnel: {{ .Values.cloudflare.tunnelName }}
+    credentials-file: /etc/cloudflared/creds/credentials.json
+    warp-routing:
+      enabled: {{ .Values.cloudflare.enableWarp }}
+    ingress:
+      {{- with .Values.cloudflare.ingress }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- if not .Values.disable404 }}
+      - service: http_status:404
+      {{- end }}
+  {{- end }}
+{{- end }}
