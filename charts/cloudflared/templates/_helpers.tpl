@@ -85,7 +85,7 @@ podAntiAffinity:
 {{- end }}
 
 {{- define "cloudflared.envName" -}}
-{{- printf "%s-%s" (include "cloudflared.fullname" .) "env" -}}
+{{- printf "%s-%s" (include "cloudflared.fullname" .) "env" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{- define "cloudflared.args" -}}
@@ -101,6 +101,6 @@ podAntiAffinity:
 {{- if ne .Values.cloudflare.secretName "" }}
 {{- printf "%s" .Values.cloudflare.secretName -}}
 {{- else }}
-{{- printf "%s-%s" (include "cloudflared.fullname" .) "credentials" -}}
+{{- printf "%s-%s" (include "cloudflared.fullname" .) "credentials" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
