@@ -3,9 +3,9 @@ kind: ConfigMap
 metadata:
   name: {{ include "cloudflared.envName" . }}
   labels:
-    {{ include "cloudflared.labels" . | nindent 4 }}
+    {{- include "cloudflared.labels" . | nindent 4 }}
 data:
-  {{ .Values.cloudflare.env | toYaml | nindent 2 }}
+  {{- .Values.cloudflare.env | toYaml | nindent 2 }}
 {{- if eq .Values.cloudflare.tunnelToken "" }}
 ---
 apiVersion: v1
@@ -13,7 +13,7 @@ kind: ConfigMap
 metadata:
   name: "{{ include "cloudflared.fullname" . }}-configs"
   labels:
-    {{ include "cloudflared.labels" . | nindent 4 }}
+    {{- include "cloudflared.labels" . | nindent 4 }}
 data:
   # https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/local-management/configuration-file/
   {{- if ne .Values.cloudflare.config "" }}

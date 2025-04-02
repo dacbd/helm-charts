@@ -42,7 +42,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["cloudflared"]
           args:
-            {{ include "cloudflared.args" . | nindent 12 }}
+            {{- include "cloudflared.args" . | nindent 12 }}
           envFrom:
             - configMapRef:
               name: {{ include "cloudflared.envName" .  }}
@@ -89,10 +89,15 @@ spec:
       {{- end }}
       affinity:
       {{- with .Values.affinity }}
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- if not .Values.disableAntiAffinity }}
-      {{- include "cloudflared.antiAffinity" . | toYaml | nindent 8 }}
+        {{- if not .Values.disableAntiAffinity }}
+          {{- merge . (include "cloudflared.antiAffinity" .) | nindent 8 }}
+        {{- else -}}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- else -}}
+        {{- if not .Values.disableAntiAffinity }}
+          {{- include "cloudflared.antiAffinity" . | nindent 8 }}
+        {{- end -}}
       {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
