@@ -45,11 +45,11 @@ spec:
             {{- include "cloudflared.args" . | nindent 12 }}
           envFrom:
             - configMapRef:
-              name: {{ include "cloudflared.envName" .  }}
-              optional: true
+                name: {{ include "cloudflared.envName" .  }}
+                optional: true
             - secretRef:
-              name: {{ include "cloudflared.envName" .  }}
-              optional: true
+                name: {{ include "cloudflared.envName" .  }}
+                optional: true
           livenessProbe:
             httpGet:
               # Cloudflared has a /ready endpoint which returns 200 if and only if
