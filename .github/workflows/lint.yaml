@@ -28,3 +28,45 @@ jobs:
               echo "---------------------------------"
             fi
           done
+
+  check-version-bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check for version bump in changed charts
+        shell: bash
+        run: |
+          # Get the base branch for comparison
+          BASE_BRANCH=${{ github.base_ref }}
+
+          # Find all charts with changes
+          CHANGED_CHARTS=$(git diff --find-renames --name-only origin/${BASE_BRANCH}... | grep "^charts/" | cut -d/ -f2 | sort | uniq)
+
+          # Check if any Chart.yaml files were modified
+          for CHART in $CHANGED_CHARTS; do
+            if [ -d "charts/$CHART" ]; then
+              # Check if any files other than Chart.yaml have changed
+              OTHER_FILES=$(git diff --find-renames --name-only origin/${BASE_BRANCH}... -- "charts/$CHART" | grep -v "Chart.yaml")
+              if [ -n "$OTHER_FILES" ]; then
+                echo "Changes detected in chart: $CHART"
+                # Check if Chart.yaml was modified
+                if ! git diff --find-renames --name-only origin/${BASE_BRANCH}... -- "charts/$CHART/Chart.yaml" | grep -q "Chart.yaml"; then
+                  echo "Error: Chart $CHART has been modified but Chart.yaml has not changed"
+                  exit 1
+                fi
+                # Check if version has changed
+                OLD_VERSION=$(git show origin/${BASE_BRANCH}:charts/$CHART/Chart.yaml 2>/dev/null | grep -E '^version:' | awk '{print $2}')
+                NEW_VERSION=$(grep -E '^version:' charts/$CHART/Chart.yaml | awk '{print $2}')
+                if [ "$OLD_VERSION" = "$NEW_VERSION" ]; then
+                  echo "Error: Chart $CHART has been modified but version in Chart.yaml has not changed"
+                  echo "Old version: $OLD_VERSION"
+                  echo "New version: $NEW_VERSION"
+                  exit 1
+                fi
+                echo "Chart $CHART version changed from $OLD_VERSION to $NEW_VERSION"
+              fi
+            fi
+          done
+          echo "All modified charts have version bumps."
