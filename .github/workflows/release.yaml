@@ -38,7 +38,7 @@ jobs:
           set -e
           for chart in $(ls charts); do
             if [ -d "./charts/$chart" ]; then
-              if [ $(git diff --quiet HEAD^ -- "./charts/$chart") ]; then
+              if ! git diff --quiet HEAD^ -- "./charts/$chart" ; then
                 pushd "./charts/$chart"
                 echo "Packaging chart: $chart"
                 helm package .
