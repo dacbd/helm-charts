@@ -59,14 +59,14 @@ autoscaling:
 
 # Additional volumes on the output Deployment definition.
 volumes:
- - name: data
-   emptyDir: {}
+  - name: data
+    emptyDir: {}
 
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts:
- - name: data
-   mountPath: "/var/libsql"
-   readOnly: false
+  - name: data
+    mountPath: "/var/libsql"
+    readOnly: false
 
 nodeSelector: {}
 
@@ -74,6 +74,6 @@ tolerations: []
 
 affinity: {}
 
-# Set to true to disable the builtin antiAffinity which will try to place 
+# Set to true to disable the builtin antiAffinity which will try to place
 # new pods on nodes which don't have a cloudflared pods already
 disableAntiAffinity: false
