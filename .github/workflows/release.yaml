@@ -49,7 +49,7 @@ jobs:
                 popd
                 echo "---------------------------------"
               else
-                echo "$chart not changed"
+                echo "No changes detected in chart \"$chart\"; skipping Package and Push."
               fi
             fi
           done
