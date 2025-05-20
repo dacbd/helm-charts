@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "charts/**"
 
 jobs:
   release:
@@ -38,14 +40,18 @@ jobs:
           set -e
           for chart in $(ls charts); do
             if [ -d "./charts/$chart" ]; then
-              pushd "./charts/$chart"
-              echo "Packaging chart: $chart"
-              helm package .
+              if ! git diff --quiet HEAD^ -- "./charts/$chart" ; then
+                pushd "./charts/$chart"
+                echo "Packaging chart: $chart"
+                helm package .
 
-              echo "Pushing chart: $chart"
-              version=$(yq '.version' ./Chart.yaml)
-              helm push "$chart-$version.tgz" "oci://ghcr.io/dacbd/helm-charts"
-              popd
-              echo "---------------------------------"
+                echo "Pushing chart: $chart"
+                version=$(yq '.version' ./Chart.yaml)
+                helm push "$chart-$version.tgz" "oci://ghcr.io/dacbd/helm-charts"
+                popd
+                echo "---------------------------------"
+              else
+                echo "No changes detected in chart \"$chart\"; skipping Package and Push."
+              fi
             fi
           done
