@@ -1,0 +1,79 @@
+sqld:
+  enableConsole: false # TODO
+  env:
+    SQLD_DB_PATH: "/var/libsql/data.sqld"
+    HTTP_LISTEN_ADDR: "0.0.0.0:8080"
+    ADMIN_LISTEN_ADDR: ""
+
+image:
+  repository: ghcr.io/tursodatabase/libsql-server
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+replicaCount: 1
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 666
+
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+
+# User should adjust as needed, these are opinionated defaults
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 75
+  targetMemoryUtilizationPercentage: 75
+
+# Additional volumes on the output Deployment definition.
+volumes:
+  - name: data
+    emptyDir: {}
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts:
+  - name: data
+    mountPath: "/var/libsql"
+    readOnly: false
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Set to true to disable the builtin antiAffinity which will try to place
+# new pods on nodes which don't have a cloudflared pods already
+disableAntiAffinity: false
