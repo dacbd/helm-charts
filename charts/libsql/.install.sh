@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
 
 if [ "$(kubectl config current-context)" != "kind-kind" ]; then
   echo "kube context is an unexpected value"
