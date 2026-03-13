@@ -1,0 +1,7 @@
+apiVersion: v2
+name: debug
+description: An easy test for value injection
+
+type: app
+version: 0.1.0
+appVersion: "0.0.0"

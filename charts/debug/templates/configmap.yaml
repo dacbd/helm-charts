@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-debug
+  namespace: {{ .Release.Namespace }}
+data:
+  default: {{ .Values.default }}
+  thing1: {{ .Values.thing1 }}
+  thing2: {{ .Values.thing2 }}
+  thing3: {{ .Values.thing3 }}
+  thing4: {{ .Values.thing4 }}
+  thing5: {{ .Values.thing5 }}
+
+  nested: |
+    thing1: {{ .Values.thing1 }}
+    thing2: {{ .Values.thing2 }}
+    thing3: {{ .Values.thing3 }}
+    thing4: {{ .Values.thing4 }}
+    thing5: {{ .Values.thing5 }}
