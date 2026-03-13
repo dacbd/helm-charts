@@ -12,8 +12,8 @@ data:
   thing5: {{ .Values.thing5 }}
 
   nested: |
-    thing1: {{ .Values.thing1 }}
-    thing2: {{ .Values.thing2 }}
-    thing3: {{ .Values.thing3 }}
-    thing4: {{ .Values.thing4 }}
-    thing5: {{ .Values.thing5 }}
+    thing1: {{ .Values.nested.thing1 }}
+    thing2: {{ .Values.nested.thing2 }}
+    thing3: {{ .Values.nested.thing3 }}
+    thing4: {{ .Values.nested.thing4 }}
+    thing5: {{ .Values.nested.thing5 }}
